@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "isps-data-extractor"
+version = "0.1.0"
+description = "Extract and normalize ISP provider contacts from CSV files."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas==2.0.3",
+    "openpyxl==3.1.5",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pandas-stubs==3.0.5.260914",
+]
+
+[project.scripts]
+isps-extractor = "isps_extractor.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
