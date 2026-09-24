@@ -9,6 +9,8 @@ from isps_extractor.processor import (
     extract_contacts_from_files,
     extract_unique_providers,
     find_provider_column,
+    iter_contacts,
+    iter_contacts_from_files,
 )
 
 
@@ -111,6 +113,33 @@ class ProcessorTests(unittest.TestCase):
         self.assertEqual(
             [(record["provider_name"], record["source_file"]) for record in records],
             [("ISP Uno", "first.csv"), ("ISP Dos", "second.csv")],
+        )
+
+    def test_iter_contacts_yields_records_progressively(self):
+        data = pd.DataFrame({"Empresa": ["ISP Uno", "ISP Dos"]})
+
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            csv_path = Path(temporary_directory) / "providers.csv"
+            data.to_csv(csv_path, index=False)
+
+            records_iterator = iter_contacts(csv_path)
+
+            self.assertTrue(hasattr(records_iterator, "__next__"))
+            self.assertEqual(next(records_iterator)["provider_name"], "ISP Uno")
+            self.assertEqual(next(records_iterator)["provider_name"], "ISP Dos")
+
+    def test_iter_contacts_from_files_preserves_all_sources(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            first_csv = Path(temporary_directory) / "first.csv"
+            second_csv = Path(temporary_directory) / "second.csv"
+            pd.DataFrame({"Empresa": ["ISP Uno"]}).to_csv(first_csv, index=False)
+            pd.DataFrame({"Empresa": ["ISP Dos"]}).to_csv(second_csv, index=False)
+
+            records = list(iter_contacts_from_files([first_csv, second_csv]))
+
+        self.assertEqual(
+            [record["source_file"] for record in records],
+            ["first.csv", "second.csv"],
         )
 
 

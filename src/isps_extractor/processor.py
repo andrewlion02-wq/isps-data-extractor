@@ -67,9 +67,8 @@ def extract_unique_providers(csv_file):
     return providers
 
 
-def extract_contacts(csv_file):
-    """Extracts normalized provider and contact records from a CSV in chunks."""
-    records = []
+def iter_contacts(csv_file):
+    """Yields normalized provider and contact records from a CSV in chunks."""
     provider_column = None
     field_columns = {}
     source_file = Path(csv_file).name
@@ -95,14 +94,20 @@ def extract_contacts(csv_file):
                 for field_name, column in field_columns.items()
             }
             record["source_file"] = source_file
-            records.append(record)
+            yield record
 
-    return records
+
+def extract_contacts(csv_file):
+    """Extracts all normalized contacts from a CSV as a list."""
+    return list(iter_contacts(csv_file))
+
+
+def iter_contacts_from_files(csv_files):
+    """Yields normalized contacts from every CSV in the provided collection."""
+    for csv_file in csv_files:
+        yield from iter_contacts(csv_file)
 
 
 def extract_contacts_from_files(csv_files):
-    """Extracts normalized contacts from every CSV in the provided collection."""
-    records = []
-    for csv_file in csv_files:
-        records.extend(extract_contacts(csv_file))
-    return records
+    """Extracts all normalized contacts from multiple CSV files as a list."""
+    return list(iter_contacts_from_files(csv_files))

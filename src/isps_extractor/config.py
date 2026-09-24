@@ -1,6 +1,8 @@
 CHUNK_SIZE = 50000
 OUTPUT_FILE = "Lista_ISPs_Colombia_Limpia.xlsx"
 CONTACTS_OUTPUT_FILE = "Contactos_ISPs_Normalizados.xlsx"
+QUALITY_OUTPUT_FILE = "Reporte_Calidad_ISPs.xlsx"
+EXCEL_MAX_DATA_ROWS = 1_048_575
 COLUMN_ALIASES = {
     "provider_name": [
         "Razon Social",

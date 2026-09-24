@@ -1,6 +1,7 @@
 import unittest
 
 from isps_extractor.quality import (
+    build_quality_report,
     deduplicate_records,
     is_valid_email,
     is_valid_phone,
@@ -84,6 +85,32 @@ class QualityTests(unittest.TestCase):
 
         self.assertEqual(duplicates_removed, 0)
         self.assertEqual(len(deduplicated), 2)
+
+    def test_builds_quality_report_for_analysis(self):
+        input_records = [
+            {
+                "provider_name": "ISP Uno",
+                "email": "uno@example.com",
+                "phone": "3001234567",
+                "website": "https://ispuno.com",
+            },
+            {
+                "provider_name": "ISP Uno",
+                "email": "uno@example.com",
+                "phone": "3001234567",
+                "website": "https://ispuno.com",
+            },
+        ]
+        output_records = [input_records[0]]
+
+        report = build_quality_report(input_records, output_records, 1)
+
+        self.assertEqual(report["records_input"], 2)
+        self.assertEqual(report["records_output"], 1)
+        self.assertEqual(report["duplicates_removed"], 1)
+        self.assertEqual(report["providers_unique"], 1)
+        self.assertEqual(report["emails_valid"], 1)
+        self.assertEqual(report["records_with_issues"], 0)
 
 
 if __name__ == "__main__":

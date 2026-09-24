@@ -131,3 +131,12 @@ def profile_records(records):
         ),
         "records_with_issues": records_with_issues,
     }
+
+
+def build_quality_report(input_records, output_records, duplicates_removed):
+    """Builds an analysis-ready quality report for one extraction run."""
+    report = profile_records(output_records)
+    report["records_input"] = len(input_records)
+    report["records_output"] = len(output_records)
+    report["duplicates_removed"] = duplicates_removed
+    return report
