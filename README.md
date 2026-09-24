@@ -62,6 +62,7 @@ Los campos ausentes deben quedar vacios, no provocar un fallo global. Los regist
 
 - `src/isps_extractor/input_reader.py`: descubrimiento y lectura por bloques.
 - `src/isps_extractor/processor.py`: normalizacion, deteccion de columnas y deduplicacion.
+- `src/isps_extractor/quality.py`: validacion de contactos y metricas de calidad.
 - `src/isps_extractor/config.py`: configuracion de columnas, tamano de bloque y formatos.
 - `src/isps_extractor/cli.py`: CLI y coordinacion del flujo.
 - `tests/test_processor.py`: especificaciones ejecutables del procesamiento.
@@ -123,3 +124,6 @@ La ejecucion actual busca todos los archivos CSV en la carpeta de trabajo y gene
 
 - `Contactos_ISPs_Normalizados.xlsx`, con nombres, contactos y el archivo de origen.
 - `Lista_ISPs_Colombia_Limpia.xlsx`, con los nombres de proveedores unicos.
+
+Durante la ejecucion tambien se muestra un resumen de registros con problemas y
+la cantidad de correos, telefonos y sitios web validos.

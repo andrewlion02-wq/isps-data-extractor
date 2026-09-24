@@ -5,6 +5,7 @@ import pandas as pd
 from .config import CONTACTS_OUTPUT_FILE, OUTPUT_FILE
 from .input_reader import find_csv_files
 from .processor import extract_contacts_from_files
+from .quality import profile_records
 
 
 def save_providers(providers, output_file=OUTPUT_FILE):
@@ -61,10 +62,24 @@ def main(arguments=None):
         records = extract_contacts_from_files(csv_files)
 
         if records:
+            quality_profile = profile_records(records)
             save_contacts(records, options.contacts_output)
             providers = {record["provider_name"] for record in records}
             save_providers(providers, options.providers_output)
             print(f"\n¡Éxito! Se encontraron {len(providers)} empresas proveedoras (ISPs) únicas.")
+            print(
+                "📊 Calidad: "
+                f"{quality_profile['records_total']} registros, "
+                f"{quality_profile['records_with_issues']} con problemas."
+            )
+            print(
+                "   Correos válidos: "
+                f"{quality_profile['emails_valid']}/{quality_profile['emails_present']} | "
+                "Teléfonos válidos: "
+                f"{quality_profile['phones_valid']}/{quality_profile['phones_present']} | "
+                "Webs válidas: "
+                f"{quality_profile['websites_valid']}/{quality_profile['websites_present']}"
+            )
             print(f"💾 Los contactos han sido guardados como '{options.contacts_output}'")
             print(f"💾 La lista de proveedores ha sido guardada como '{options.providers_output}'")
     except Exception as error:

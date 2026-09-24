@@ -1,0 +1,55 @@
+import unittest
+
+from isps_extractor.quality import (
+    is_valid_email,
+    is_valid_phone,
+    is_valid_website,
+    profile_records,
+)
+
+
+class QualityTests(unittest.TestCase):
+    def test_empty_contact_fields_are_valid(self):
+        self.assertTrue(is_valid_email(""))
+        self.assertTrue(is_valid_phone(""))
+        self.assertTrue(is_valid_website(""))
+
+    def test_validates_email_phone_and_website_formats(self):
+        self.assertTrue(is_valid_email("contact@example.com"))
+        self.assertFalse(is_valid_email("invalid-email"))
+        self.assertTrue(is_valid_phone("+57 300 123 4567"))
+        self.assertFalse(is_valid_phone("123"))
+        self.assertTrue(is_valid_website("https://example.com"))
+        self.assertFalse(is_valid_website("example.com"))
+
+    def test_profiles_contact_quality_metrics(self):
+        records = [
+            {
+                "provider_name": "ISP Uno",
+                "email": "uno@example.com",
+                "phone": "3001234567",
+                "website": "https://ispuno.com",
+            },
+            {
+                "provider_name": "ISP Dos",
+                "email": "invalid",
+                "phone": "123",
+                "website": "",
+            },
+        ]
+
+        profile = profile_records(records)
+
+        self.assertEqual(profile["records_total"], 2)
+        self.assertEqual(profile["providers_unique"], 2)
+        self.assertEqual(profile["emails_present"], 2)
+        self.assertEqual(profile["emails_valid"], 1)
+        self.assertEqual(profile["phones_present"], 2)
+        self.assertEqual(profile["phones_valid"], 1)
+        self.assertEqual(profile["websites_present"], 1)
+        self.assertEqual(profile["websites_valid"], 1)
+        self.assertEqual(profile["records_with_issues"], 1)
+
+
+if __name__ == "__main__":
+    unittest.main()
