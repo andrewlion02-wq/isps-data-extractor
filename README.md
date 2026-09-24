@@ -126,4 +126,5 @@ La ejecucion actual busca todos los archivos CSV en la carpeta de trabajo y gene
 - `Lista_ISPs_Colombia_Limpia.xlsx`, con los nombres de proveedores unicos.
 
 Durante la ejecucion tambien se muestra un resumen de registros con problemas y
-la cantidad de correos, telefonos y sitios web validos.
+la cantidad de correos, telefonos y sitios web validos. Los duplicados por
+proveedor y correo o telefono se fusionan conservando sus archivos de origen.

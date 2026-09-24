@@ -5,7 +5,7 @@ import pandas as pd
 from .config import CONTACTS_OUTPUT_FILE, OUTPUT_FILE
 from .input_reader import find_csv_files
 from .processor import extract_contacts_from_files
-from .quality import profile_records
+from .quality import deduplicate_records, profile_records
 
 
 def save_providers(providers, output_file=OUTPUT_FILE):
@@ -62,6 +62,7 @@ def main(arguments=None):
         records = extract_contacts_from_files(csv_files)
 
         if records:
+            records, duplicates_removed = deduplicate_records(records)
             quality_profile = profile_records(records)
             save_contacts(records, options.contacts_output)
             providers = {record["provider_name"] for record in records}
@@ -70,7 +71,8 @@ def main(arguments=None):
             print(
                 "📊 Calidad: "
                 f"{quality_profile['records_total']} registros, "
-                f"{quality_profile['records_with_issues']} con problemas."
+                f"{quality_profile['records_with_issues']} con problemas, "
+                f"{duplicates_removed} duplicados eliminados."
             )
             print(
                 "   Correos válidos: "

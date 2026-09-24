@@ -1,6 +1,7 @@
 import unittest
 
 from isps_extractor.quality import (
+    deduplicate_records,
     is_valid_email,
     is_valid_phone,
     is_valid_website,
@@ -49,6 +50,40 @@ class QualityTests(unittest.TestCase):
         self.assertEqual(profile["websites_present"], 1)
         self.assertEqual(profile["websites_valid"], 1)
         self.assertEqual(profile["records_with_issues"], 1)
+
+    def test_deduplicates_by_provider_and_email_and_merges_sources(self):
+        records = [
+            {
+                "provider_name": "ISP Uno",
+                "email": "CONTACTO@ISPUNO.COM",
+                "phone": "",
+                "source_file": "first.csv",
+            },
+            {
+                "provider_name": " ISP Uno ",
+                "email": "contacto@ispuno.com",
+                "phone": "3001234567",
+                "source_file": "second.csv",
+            },
+        ]
+
+        deduplicated, duplicates_removed = deduplicate_records(records)
+
+        self.assertEqual(duplicates_removed, 1)
+        self.assertEqual(len(deduplicated), 1)
+        self.assertEqual(deduplicated[0]["source_file"], "first.csv;second.csv")
+        self.assertEqual(deduplicated[0]["phone"], "3001234567")
+
+    def test_keeps_records_without_contact_identifiers(self):
+        records = [
+            {"provider_name": "ISP Uno", "email": "", "phone": ""},
+            {"provider_name": "ISP Uno", "email": "", "phone": ""},
+        ]
+
+        deduplicated, duplicates_removed = deduplicate_records(records)
+
+        self.assertEqual(duplicates_removed, 0)
+        self.assertEqual(len(deduplicated), 2)
 
 
 if __name__ == "__main__":
